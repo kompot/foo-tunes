@@ -1,0 +1,79 @@
+h1. foo-tunes
+
+Project is aimed to help advanced music lovers update their iPods with
+minimum usage of iTunes. Key features are:
+
+* One-click synchronization
+* Bidirectional playback statistics update between iPod/iTunes and foobar2000
+
+h2. Motivation
+
+There are lots of iPod sync software on the market but most/all of those use
+some reverse engineered libraries to access iPod. Major iPod software
+updates often brake those libs. On the other hand there's a lack of 
+tools that allow precise control on what is done to your music. Among those
+tools are excellent `foobar2000` media player and its great component
+for syncing with iPods `foo_dop`. After release of iOS 5 it stopped working,
+so I decided to write a tool of my own. It uses (and launches) iTunes
+automatically but minimum effort is required.
+
+h2. Prerequisites
+
+* Windows (tested on XP)
+
+* iTunes 10.5.2+
+
+* foobar2000 1.1.10+
+
+* install these foobar2000 components and set them up as below
+
+  * Masstagger 1.8.4
+    http://www.foobar2000.org/components/view/foo_masstag
+
+  * Text Tools 1.0.5
+    http://www.foobar2000.org/components/view/foo_texttools
+
+    Command named `iTunesSync` must be created with the following content
+    (excluding line break):
+
+    {"Location": "%path%", "Rating": "%rating%", "PlayedCount": "%play_count%",
+    "PlayedDate": "%last_played%", "DateAdded": "%added%"},    
+
+  * Run Command 1.1
+    http://www.foobar2000.org/components/view/foo_runcmd
+
+  * Playback Statistics 3.0.2
+    http://www.foobar2000.org/components/view/foo_playcount
+
+* run `prerequisites/register.bat` to register dll component
+  allowing reading data from clipboard
+
+h2. Internals
+
+Main script is `foo-tunes.js` (modify variables in the first lines - at least
+`pathToMusic` and `foobar2000`). Run it with `sync.bat`. The following actions
+are performed:
+
+* `pathToMusic` folder is scanned for new files
+* album art is attached on the fly (iTunes is used)
+* tags (see `tagMappings` variable in `foo-tunes.js`)
+  are modified (foobar2000 tagger via masstagger is used)
+* // TODO dead tracks, not found on disk, should be removed
+* those not in iTunes library are added to it
+* // TODO sync foobar2000 and iTunes statistics
+* and then synced to iPod
+
+h2. Recommended workflow 
+
+Set up foobar2000 converter component to convert music to `pathToMusic` folder
+(or file operations component if you do not want to convert - but I recommend
+using Nero AAC Encoded as AAC provides better quality at a lower
+bitrate than mp3). Do not forget to copy *.jpg along with music files.
+
+Add `pathToMusic` as foobar2000 media library folder. This is required if you
+wish to sync playback statistics with iPod. Stats is synced based on full
+filename. Of course you do not want to see duplicates in your foobar2000 library.
+There are several ways to solve that. I use excellent `foo_facets` component
+to filter out tracks based on path, so I don't those iPod-only tracks in my
+library at all. Another way is to attach `pathToMusic` as media library before
+every sync.
