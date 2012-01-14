@@ -12,7 +12,7 @@ There are lots of iPod sync software on the market but most/all of those use som
 
 h2. Prerequisites
 
-* Windows (tested on XP)
+* Windows (tested on Windows XP)
 * "iTunes 10.5.2+":http://www.apple.com/itunes/download/
 * "foobar2000 1.1.10+":http://www.foobar2000.org/download
 * run `prerequisites/register.bat` to register dll component allowing reading data from clipboard
@@ -31,15 +31,18 @@ h2. Internals and TODOs
 
 Main script is `foo-tunes.js` (modify variables in the first lines - at least `pathToMusic` and `foobar2000`). Run it with `sync.bat`. The following actions are performed:
 
+* // TODO: move all files from folder `pathToMusic`-not-tracked to `pathToMusic` and wait for foobar2000 to get in touch with them
 * iPod is synced to iTunes
 * `pathToMusic` folder is scanned for new files
 * album art is attached on the fly (iTunes is used)
 * // TODO check whether foobar2000 is used otherwise just sync with files
-* tags (see `tagMappings` variable in `foo-tunes.js`) are modified (foobar2000 tagger via masstagger is used)
-* // TODO dead tracks, not found on disk, should be removed
+* tags (see `tagMappings` variable in `foo-tunes.js`) are modified (foobar2000 masstagger is used)
+* // TODO dead tracks, not found on disk, should be removed; option to remove those from iPod
 * those not in iTunes library are added to it
 * // TODO sync foobar2000 and iTunes statistics
-* iTunes is synced to iPod
+* new files are sent to iPod
+* iTunes stats is synced to iPod
+* // TODO: move all files from `pathToMusic` to `pathToMusic`-not-tracked
 
 h2. Recommended workflow 
 
