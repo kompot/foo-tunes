@@ -1,7 +1,7 @@
 h1. foo-tunes
 
-Project is aimed to help advanced music lovers update their iPods with
-minimum usage of iTunes. Key features are:
+Project is aimed to help advanced music lovers with foobar2000
+update their iPods with minimum usage of iTunes. Key features are:
 
 * One-click synchronization
 * Bidirectional playback statistics update between iPod/iTunes and foobar2000
@@ -28,12 +28,12 @@ h2. Prerequisites
 * run `prerequisites/register.bat` to register dll component
   allowing reading data from clipboard
 
-h3. install these foobar2000 components and set them up as below
+* install these foobar2000 components and set them up as below
 
-* Masstagger 1.8.4
+** Masstagger 1.8.4
   http://www.foobar2000.org/components/view/foo_masstag
 
-* Text Tools 1.0.5
+** Text Tools 1.0.5
   http://www.foobar2000.org/components/view/foo_texttools
 
   Command named `iTunesSync` must be created with the following content
@@ -43,13 +43,13 @@ h3. install these foobar2000 components and set them up as below
  "PlayedDate": "%last_played%", "DateAdded": "%added%"},    
 </pre>
 
-* Run Command 1.1
+** Run Command 1.1
   http://www.foobar2000.org/components/view/foo_runcmd
 
-* Playback Statistics 3.0.2
+** Playback Statistics 3.0.2
   http://www.foobar2000.org/components/view/foo_playcount
 
-h2. Internals
+h2. Internals and TODOs
 
 Main script is `foo-tunes.js` (modify variables in the first lines - at least
 `pathToMusic` and `foobar2000`). Run it with `sync.bat`. The following actions
@@ -57,6 +57,7 @@ are performed:
 
 * `pathToMusic` folder is scanned for new files
 * album art is attached on the fly (iTunes is used)
+* // TODO check whether foobar2000 is used otherwise just sync with files
 * tags (see `tagMappings` variable in `foo-tunes.js`)
   are modified (foobar2000 tagger via masstagger is used)
 * // TODO dead tracks, not found on disk, should be removed
