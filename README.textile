@@ -4,6 +4,7 @@ Project is aimed to help foobar2000 users update their iPods with minimum usage 
 
 * One-click synchronization
 * Bidirectional playback statistics update between iPod/iTunes and foobar2000
+* iTunes media library is used only as a mediator between foobar2000 and iPod
 
 h2. Motivation
 
@@ -30,19 +31,19 @@ h2. Internals and TODOs
 
 Main script is `foo-tunes.js` (modify variables in the first lines - at least `pathToMusic` and `foobar2000`). Run it with `sync.bat`. The following actions are performed:
 
-* `pathToMusic` folder is scanned for new files (you can set this to your main music folder but there is no reason to trust iTunes in terms of not interfering with your precious files and tags)
+* iPod is synced to iTunes
+* `pathToMusic` folder is scanned for new files
 * album art is attached on the fly (iTunes is used)
 * // TODO check whether foobar2000 is used otherwise just sync with files
 * tags (see `tagMappings` variable in `foo-tunes.js`) are modified (foobar2000 tagger via masstagger is used)
 * // TODO dead tracks, not found on disk, should be removed
 * those not in iTunes library are added to it
 * // TODO sync foobar2000 and iTunes statistics
-* and then synced to iPod
+* iTunes is synced to iPod
 
 h2. Recommended workflow 
 
-Set up foobar2000 converter component to convert music to `pathToMusic` folder (or file operations component if you do not want to convert - but I recommend using Nero AAC Encoder as aac provides better quality at a lower
-bitrate than mp3). Do not forget to copy *.jpg along with music files.
+Set up foobar2000 converter component to convert music to `pathToMusic` folder (or file operations component if you do not want to convert - but I recommend using Nero AAC Encoder as aac provides better quality at a lower bitrate than mp3). Do not forget to copy *.jpg along with music files.
 
 Actually you may not use a separate folder and set your main library as iTunes file source but in this case your tags will get modifed by script (album art added if none and tags mapped if set). Also I would not expect iTunes not to mess up with your library. So keeping a separate folder is the preferred way.
 
