@@ -20,14 +20,14 @@ automatically but minimum effort is required.
 h2. Prerequisites
 
 * Windows (tested on XP)
-* iTunes 10.5.2+
-* foobar2000 1.1.10+
+* "iTunes 10.5.2+":http://www.apple.com/itunes/download/
+* "foobar2000 1.1.10+":http://www.foobar2000.org/download
 * run `prerequisites/register.bat` to register dll component allowing reading data from clipboard
 * install these foobar2000 components and set them up as below
-** Masstagger 1.8.4 http://www.foobar2000.org/components/view/foo_masstag
-** Run Command 1.1 http://www.foobar2000.org/components/view/foo_runcmd
-** Playback Statistics 3.0.2 http://www.foobar2000.org/components/view/foo_playcount
-** Text Tools 1.0.5 http://www.foobar2000.org/components/view/foo_texttools
+** "Masstagger 1.8.4":http://www.foobar2000.org/components/view/foo_masstag
+** "Run Command 1.1":http://www.foobar2000.org/components/view/foo_runcmd
+** "Playback Statistics 3.0.2":http://www.foobar2000.org/components/view/foo_playcount
+** "Text Tools 1.0.5":http://www.foobar2000.org/components/view/foo_texttools
 
 Command named `iTunesSync` for the `foo_texttools` plugin
 must be created with the following content (excluding line break):
