@@ -25,28 +25,29 @@ h2. Prerequisites
 
 * foobar2000 1.1.10+
 
-* install these foobar2000 components and set them up as below
-
-  * Masstagger 1.8.4
-    http://www.foobar2000.org/components/view/foo_masstag
-
-  * Text Tools 1.0.5
-    http://www.foobar2000.org/components/view/foo_texttools
-
-    Command named `iTunesSync` must be created with the following content
-    (excluding line break):
-
-    {"Location": "%path%", "Rating": "%rating%", "PlayedCount": "%play_count%",
-    "PlayedDate": "%last_played%", "DateAdded": "%added%"},    
-
-  * Run Command 1.1
-    http://www.foobar2000.org/components/view/foo_runcmd
-
-  * Playback Statistics 3.0.2
-    http://www.foobar2000.org/components/view/foo_playcount
-
 * run `prerequisites/register.bat` to register dll component
   allowing reading data from clipboard
+
+h3. install these foobar2000 components and set them up as below
+
+* Masstagger 1.8.4
+  http://www.foobar2000.org/components/view/foo_masstag
+
+* Text Tools 1.0.5
+  http://www.foobar2000.org/components/view/foo_texttools
+
+  Command named `iTunesSync` must be created with the following content
+  (excluding line break):
+<pre>
+{"Location": "%path%", "Rating": "%rating%", "PlayedCount": "%play_count%",
+ "PlayedDate": "%last_played%", "DateAdded": "%added%"},    
+</pre>
+
+* Run Command 1.1
+  http://www.foobar2000.org/components/view/foo_runcmd
+
+* Playback Statistics 3.0.2
+  http://www.foobar2000.org/components/view/foo_playcount
 
 h2. Internals
 
