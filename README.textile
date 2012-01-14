@@ -29,7 +29,7 @@ h2. Prerequisites
 ** Playback Statistics 3.0.2 http://www.foobar2000.org/components/view/foo_playcount
 ** Text Tools 1.0.5 http://www.foobar2000.org/components/view/foo_texttools
 
-Command named `iTunesSync` for the last one plugin
+Command named `iTunesSync` for the `foo_texttools` plugin
 must be created with the following content (excluding line break):
 
 <pre>
@@ -64,6 +64,6 @@ Add `pathToMusic` as foobar2000 media library folder. This is required if you
 wish to sync playback statistics with iPod. Stats is synced based on full
 filename. Of course you do not want to see duplicates in your foobar2000 library.
 There are several ways to solve that. I use excellent `foo_facets` component
-to filter out tracks based on path, so I don't those iPod-only tracks in my
+to filter out tracks based on path, so I don't see those iPod-only tracks in the
 library at all. Another way is to attach `pathToMusic` as media library before
 every sync.
