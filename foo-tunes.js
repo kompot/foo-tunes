@@ -2,7 +2,7 @@ file = new ActiveXObject("Scripting.FileSystemObject");
 eval(file.OpenTextFile("lib/all-libraries.js", 1).ReadAll());
 
 // values are: DEBUG, INFO, ERROR
-logLevel = "DEBUG";
+logLevel = "INFO";
 foobar2000Path = "D:\\tools\\foobar2000\\foobar2000.exe";
 musicTrackedPath  = "D:\\music-iphone\\";
 musicNotTrackedPath  = "D:\\music-iphone-not-tracked\\";
@@ -11,9 +11,16 @@ allowedMusicTypes = new Hashtable();
 allowedMusicTypes.put("mp3", "");
 allowedMusicTypes.put("m4a", "");
 tagMappings = ""
-  + 'FORMAT:ALBUMSORTORDER:"%ALBUM ARTIST% %DATE%";'
-  + 'FORMAT:ITUNESCOMPILATION:"$if($stricmp($meta(album artist),various artists),1,)";'
+  // to be correctly sorted within artist view and within album view
+  + '"FORMAT:ALBUMSORTORDER:%album artist% %date%";'
+  // for compilations to appear in `compilations` section
+  + '"FORMAT:ITUNESCOMPILATION:$if($stricmp($meta(album artist),various artists),1,)";'
 ;
+/**
+ * @deprecated
+ */
+deleteTracksFromITunesNotFoundOnDisk = true;
+deleteTracksFromIPodNotFoundInITunes = true;
 
 // -----------------------------------------------------------------------------
 //
@@ -21,12 +28,16 @@ tagMappings = ""
 //
 // -----------------------------------------------------------------------------
 
-logger = new Logger(logLevel);
+var date = new Date();
+logger = new Logger(logLevel, "logs", date);
+fooTunesDb = new FooTunesDb("logs", date);
 shell = WScript.CreateObject("WScript.Shell");
-clipboard = WScript.CreateObject("WshExtra.Clipboard");
+clipboard = WScript.CreateObject("ClipboardHelper.ClipBoard");
 
+fooTunesDb.readDb();
 foobar2000 = new Foobar2000Mediator();
 foobar2000.moveMusicToTrackedLocation();
+// TODO: move when sync is over
 //foobar2000.moveMusicToNotTrackedLocation();
 
 // rescanning doesn't happen instantly but we have some time
@@ -37,37 +48,99 @@ foobar2000.moveMusicToTrackedLocation();
 foobar2000.rescanLibrary();
 
 
-var iTracks = new Hashtable();
-var fTracks = new Hashtable();
 var maxLastIndexOfSlash = -1;
 
 iTunes = new ITunesMediator();
 iTunes.initIpod();
-// TODO: scan for dead entries in library
-iTunes.cacheTracksFromLibrary();
-iTunes.addFreshFilesToITunes(file.GetFolder(musicTrackedPath));
+iTunes.cacheTracks();
+// TODO should we delete files from disk here? probably yes - if they were in db
+fooTunesDb.removeTracksNotOnIPod();
+foobar2000.loadPlaybackStats();
+
+
+
+iTunes.addFreshFilesToITunes();
+iTunes.removeTracksNotOnDisk();
+
+
+fooTunesDb.dump();
+
+WScript.Quit(1);
+
 // TODO: should find a way to cache tracks instantly, without doing second call
-iTunes.cacheTracksFromLibrary();
-iTunes.pushNewTracksToIPodAndSync();
-// TODO: push tracks that were in iTunes library before (e. g. drag'n'dropeed)
-// but somehow are not on iPod
-// TODO: also delete tracks that were deleted from iTunes library
+
+var keys = iTunes.tracksByLocation.keys();
+//var locations = new Array();
+//for (var i = 0; i < iTunes.tracksByLocation.size(); i++) {
+//  locations.push(keys[i]);
+//}
+
+
+for (var i = 0; i < iTunes.tracksByLocation.size(); i++) {
+  var defaultDate = new Date(1961, 3, 12);
+  var fd = foobar2000.tracksByLocation.get(keys[i]).PlayedDate;
+  var fooDate = new Date(fd.substr(0, 4), fd.substr(5, 2), fd.substr(8, 2), fd.substr(11, 2), fd.substr(14, 2), fd.substr(17, 2));
+  if (isNaN(parseInt(fd.substr(0, 4)))) {
+    fooDate = defaultDate;
+  }
+  var iDate = new Date(iTunes.tracksByLocation.get(keys[i]).PlayedDate);
+  if (iDate.getYear() < 1901) {
+    iDate = defaultDate;
+  }
+  //WScript.Echo(Date.format("%Y_%m_%d %H:%M:%S", new Date(2011, 12, 15, 10, 12, 12), "0").toString().padRight(24, " "));
+  var fooRating = parseInt(foobar2000.tracksByLocation.get(keys[i]).Rating);
+  if (isNaN(fooRating)) {
+    fooRating = 0;
+  }
+  var iTunesRating = parseInt(iTunes.tracksByLocation.get(keys[i]).Rating.toString()) / 20;
+  if (fooRating > iTunesRating) {
+    iTunes.iPodTracksById.get(iTunes.iTunesApp.ITObjectPersistentIDHigh(iTunes.tracksByLocation.get(keys[i]))).Rating = fooRating * 20;
+    logger.log("DEBUG", "setting track rating to " + fooRating);
+  }
+  logger.log("DEBUG",
+    formatLocationName(iTunes.tracksByLocation.get(keys[i]).Location, maxLastIndexOfSlash + 15)
+        .padRight(maxLastIndexOfSlash, " ")
+      + fooRating.toString().padLeft(3, " ")
+      + iTunesRating.toString().padLeft(3, " ")
+      + foobar2000.tracksByLocation.get(keys[i]).PlayedCount.padLeft(4, " ")
+      + iTunes.tracksByLocation.get(keys[i]).PlayedCount.toString().padLeft(4, " ")
+      + Date.format("%Y-%m-%d %H:%M:%S", fooDate, "0").toString().padLeft(24, " ")
+      + Date.format("%Y-%m-%d %H:%M:%S", iDate, "0").toString().padLeft(24, " ")
+//      + "ppp " + foobar2000.tracksByLocation.get(keys[i])
+
+//      + iTunes.tracksByLocation.get(keys[i]).PlayedDate
+//.format("%Y-%m-%d %H:%M:%S", "0").padLeft(25, " ")
+//      + Date.format("%Y-%m-%d %H:%M:%S", iTracks.get(keys[i]).DateAdded, "0").padLeft(25, " ")
+  );
+}
+
+//iTunes.pushNewTracksToIPodAndSync();
+//iTunes.findOrphanedTracksToDeleteFromIPod();
+
+
+
+
+
+
 
 WScript.Quit(1);
 
 
 
 
+
 var result = "";
+
+var keys = iTTracks.size();
 
 for (var i = 0; i < keys.length; i++) {
 //  var lastPlayed = parseDate(iTracks.get(keys[i]).PlayedDate.toString());
   logger.log("DEBUG", 
-    formatLocationName(iTracks.get(keys[i]).Location, maxLastIndexOfSlash + 15)
+    formatLocationName(iPTracks.get(keys[i]).Location, maxLastIndexOfSlash + 15)
         .padRight(maxLastIndexOfSlash, " ")
-      + iTracks.get(keys[i]).Rating.toString().padLeft(5, " ")
-      + iTracks.get(keys[i]).PlayedCount.toString().padLeft(8, " ")
-      + iTracks.get(keys[i]).PlayedDate
+      + iTTracks.get(keys[i]).Rating.toString().padLeft(5, " ")
+      + iTTracks.get(keys[i]).PlayedCount.toString().padLeft(8, " ")
+      + iTTracks.get(keys[i]).PlayedDate
 //.format("%Y-%m-%d %H:%M:%S", "0").padLeft(25, " ")
 //      + Date.format("%Y-%m-%d %H:%M:%S", iTracks.get(keys[i]).DateAdded, "0").padLeft(25, " ")
   );
@@ -86,38 +159,16 @@ function formatLocationName(fullName, maxLength) {
  * @param sleepTime if 0 then do not try to run again if exception caught
  */
 function runCommand(command, sleepTime) {
-    try {
-      logger.log("DEBUG", "going to run command " + command);
-      var retCode = shell.run(command, 0, true);
-//      logger.log("DEBUG", "command returned " + retCode);
-    } catch (e) {
-      logger.log("ERROR", "command failed " + command);
-      if (sleepTime == 0) return;
-      sleepTime = sleepTime * 2;
-      logger.log("INFO", "going to run again");
-      WScript.Sleep(sleepTime);
-      runCommand(command, sleepTime); 
-    }
+  try {
+    logger.log("DEBUG", "going to run command " + command);
+    var retCode = shell.run(command, 0, true);
+  } catch (e) {
+    logger.log("ERROR", "command failed " + command);
+    if (sleepTime == 0) return;
+    sleepTime = sleepTime * 2;
+    logger.log("INFO", "going to run again");
     WScript.Sleep(sleepTime);
-}
-
-
-// shell.run(foobar2000 + " \"/runcmd-files=" + foobarCopyCommandName
-//    + "\" \"D:/music-iphone/Deadmau5/2010 4x4=12/01 Some Chords.m4a\" \"D:/music-iphone/Deadmau5/2010 4x4=12/03 A City In Florida.m4a\"");
-
-//logger.log("DEBUG", clip.Paste());
-//var tracks = eval('([' + '{"Location": "D:\\music-iphone\\Deadmau5\\2010 4x4=12\\01 Some Chords.m4a", "Rating": "4"},{"Location": "D:\\music-iphone\\Deadmau5\\2010 4x4=12\\03 A City In Florida.m4a", "Rating": "?"}' + '])');
-
-/**
-var tracks = eval('([' + clip.Paste().replace(/\\/g, "\\\\") + '])');
-logger.log("DEBUG", "size = " + tracks.length);
-for (var i = 0; i < tracks.length; i++) {
-  if (tracks[i] !== undefined) {
-    fTracks.put(tracks[i].Location, tracks[i]);
-    logger.log("DEBUG", "--" + fTracks.get(tracks[i].Location).Rating);
+    runCommand(command, sleepTime);
   }
+  WScript.Sleep(sleepTime);
 }
-*/
-
-// Here were have iTracks and fTracks filled with iTunes and foobar2000 tracked
-// filled in. Then we should compare them and decide what should be updated.

@@ -1,1 +1,0 @@
-cscript foo-tunes.js

@@ -1,1 +1,1 @@
-regsvr32 WshExtra.dll
+regsvr32 ClipboardHelper.dll

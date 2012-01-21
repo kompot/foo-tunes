@@ -1,6 +1,6 @@
 h1. foo-tunes
 
-Project is aimed to help foobar2000 users update their iPods with minimum usage of iTunes. But you can use it even without foobar2000 and sync old-fashioned way by setting `pathToMusic` variable only. Key features are:
+Project is aimed to help foobar2000 users update their iPods with minimum usage of iTunes. Key features are:
 
 * One-click synchronization
 * Bidirectional playback statistics update between iPod/iTunes and foobar2000
@@ -24,7 +24,7 @@ h2. Prerequisites
 * in foobar2000 create command named `iTunesSync` for the `foo_texttools` plugin with the following content:
 
 <pre>
-{"Location": "%path%", "Rating": "%rating%", "PlayedCount": "%play_count%", "PlayedDate": "%last_played%"},
+{"Location": "%path%", "Rating": "%rating%", "PlayedCount": "%play_count%", "PlayedDate": "%last_played%", "DateAdded": "%added%"},
 </pre>
 
 h2. Internals and TODOs
