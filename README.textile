@@ -4,7 +4,7 @@ Project is aimed to help foobar2000 users update their iPods with minimum usage 
 
 * Bidirectional playback statistics update between iPod/iTunes and foobar2000
 * Tag mappings support (meaningful album sort by year, iTunes compilation tag based on album artist value are included)
-* Album art attach on-the-fly
+* Album art is attached on-the-fly
 * Separate folder for iPod music (you should put files to be sent to iPod there)
 * Uses iTunes COM interface to interact with iPod, so further updates to iTunes should not break `foo-tunes`
 
@@ -41,11 +41,11 @@ h2. Recommended workflow
 
 Set up foobar2000 converter component to convert music to `musicNotTrackedPath` folder (or file operations component if you do not want to convert - but I recommend using Nero AAC Encoder as aac provides better quality at a lower bitrate than mp3). Do not forget to copy *.jpg along with music files (there is such option in converter).
 
-Actually you may not use a separate folder and set your main library as iTunes file source but in this case your tags will get modifed by `foo-tunes` (album art added if none, tags mapped if set and playback statistics is first synced to file tags and then imported). Also I would not expect iTunes not to mess up with your library. So keeping a separate folder is a way to go.
+Actually you may not use a separate folder but in this case your tags will get modifed by `foo-tunes` (album art added if none, tags mapped if set and playback statistics is first synced to file tags and then imported). Also I would not expect iTunes not to mess up with your library. So keeping a separate folder is a way to go.
 
-Add `musicTrackedPath` as foobar2000 media library folder. This is required if you wish to sync playback statistics with iPod. Stats is synced based on full filename and internal iTunes track id (see `foo-tunes-db.txt`).
+Add `musicTrackedPath` as foobar2000 media library folder. This is required if you wish to sync playback statistics with iPod. Stats is synced based on full filename and internal iTunes track id (see `foo-tunes-db.txt` generated after sync).
 
-Before syncing all files are moved from `musicNotTrackedPath` to `musicTrackedPath` and when sync is over back to `musicNotTrackedPath` so you won't see duplicated in your foobar2000 library.
+Before syncing all files are moved from `musicNotTrackedPath` to `musicTrackedPath` and when sync is over back to `musicNotTrackedPath` so you won't see duplicates in your foobar2000 library.
 
 h2. Changelog
 
