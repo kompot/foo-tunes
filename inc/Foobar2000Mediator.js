@@ -154,24 +154,17 @@ Foobar2000Mediator.prototype.syncPlaybackStats = function () {
     } else {
       iPodPlayedDate = new Date(iPodPlayedDate.getTime() + iPodPlayedDate.getTimezoneOffset() * 60000);
     }
-
     var fooPlayedDateMillis = new Date(trackFoobar.PlayedDate).getTime();
     var iPodPlayedDateMillis = new Date(iPodPlayedDate).getTime();
     if (fooPlayedDateMillis != iPodPlayedDateMillis) {
       // now we should compare last played dates in both DBs and the one with
       // the date more close to now is taking precedence
-//    logger.log("INFO", new Date(iPodPlayedDate).getTime());
-//    logger.log("INFO", new Date(trackFoobar.PlayedDate).getTime());
-      logger.log("INFO", Date.format("%Y-%m-%d %H:%M:%S", iPodPlayedDate, "0").toString().padLeft(24, " "));
-      logger.log("INFO", Date.format("%Y-%m-%d %H:%M:%S", trackFoobar.PlayedDate, "0").toString().padLeft(24, " "));
-//      logger.log("INFO", iPodPlayedDate.toLocaleString());
-//      logger.log("INFO", trackFoobar.PlayedDate.toLocaleString());
-      logger.log("INFO", "Track " + location + " has been played since "
+      logger.log("DEBUG", "Track " + location + " has been played since "
           + "last sync - will be updating playback stats.");
       if (fooPlayedDateMillis > iPodPlayedDate) {
         // overwrite stats on iPod
         // TODO: the same code is in ITunesMediator - refactor
-        logger.log("INFO", "Pushing to iPod rating " + trackFoobar.Rating
+        logger.log("DEBUG", "Pushing to iPod rating " + trackFoobar.Rating
             + ", play count " + trackFoobar.PlayedCount + " and played date "
             + Date.format("%Y-%m-%d %H:%M:%S", trackFoobar.PlayedDate, "0"));
         trackIPod.Rating = 20 * trackFoobar.Rating;
@@ -182,7 +175,7 @@ Foobar2000Mediator.prototype.syncPlaybackStats = function () {
             "0"
         );
       } else {
-        logger.log("INFO", "Pushing to foobar2000 rating " + iPodRating
+        logger.log("DEBUG", "Pushing to foobar2000 rating " + iPodRating
                     + ", play count " + trackIPod.PlayedCount + " and played date "
                     + Date.format("%Y-%m-%d %H:%M:%S", iPodPlayedDate, "0"));
         // overwrite stats in foobar2000

@@ -1,34 +1,11 @@
 function ITunesMediator() {
-  this.deleteOrphanedFromIPod = deleteTracksFromIPodNotFoundInITunes;
-  /**
-   * @deprecated
-   */
-  this.deleteOrphanedFromITunes = deleteTracksFromITunesNotFoundOnDisk;
   this.ITTrackKindFile	= 1;
   this.ITSourceKindIPod = 2;
   this.ITPlaylistKindLibrary = 1;
   this.iTunesApp = WScript.CreateObject("iTunes.Application");
-  /**
-   * @deprecated do not use iTunes transitional library
-   */
-  this.iTunesLibrary = this.iTunesApp.LibraryPlaylist;
-  /**
-   * @deprecated
-   */
-  this.newTracks = new Array();
   this.iPod = null;
   this.iPodLibrary = null;
-  /**
-   * @deprecated
-   */
-  this.tracksByLocation = new Hashtable();
-  /**
-   * @deprecated do not use iTunes transitional library
-   */
-  this.iTunesTracksById = new Hashtable();
   this.iPodTracksById = new Hashtable();
-//  this.locationsById = new Hashtable();
-//  this.idsByLocation = new Hashtable();
 }
 
 ITunesMediator.prototype.initIpod = function () {
@@ -62,6 +39,8 @@ ITunesMediator.prototype.initIpod = function () {
 };
 
 ITunesMediator.prototype.id = function(track) {
+  // TODO: Is it OK to use PersistentIDHigh? Maybe
+  // should combine with e. g. ITObjectPersistentIDLow?
   return this.iTunesApp.ITObjectPersistentIDHigh(track).toString();
 };
 
@@ -72,69 +51,9 @@ ITunesMediator.prototype.cacheTracks = function () {
     var	track = this.iPodLibrary.Tracks.Item(cnt);
     // TODO: not a very definite check ("audio file") not to interfere with podcasts etc
     if (track.Kind == this.ITTrackKindFile && track.KindAsString.endsWith("audio file")) {
-//      logger.log("INFO", "track in lib: " + this.id(track) + " " + track.KindAsString);
       this.iPodTracksById.put(this.id(track), track);
-//      if (library == this.iTunesLibrary) {
-//        if (track.Location == "" && this.deleteOrphanedFromITunes) {
-//          logger.log("DEBUG", "Track #" + track.TrackNumber
-//              + " `" + track.Name + "` with empty location found on album `"
-//              + track.Album + "` by `" + track.Artist + "`. "
-//              + "It was deleted from disk and will be removed"
-//              + "from iTunes library");
-//          track.Delete();
-//        } else if (track.Location != "") {
-//          this.tracksByLocation.put(track.Location, track);
-//          var lastIndexOfSlash = track.Location.lastIndexOf("\\");
-//          if (lastIndexOfSlash > maxLastIndexOfSlash) {
-//            maxLastIndexOfSlash = lastIndexOfSlash;
-//          }
-////          this.addAlbumArtIfMissing(currTrack);
-//        }
-//      }
     }
     cnt--;
-  }
-
-};
-
-/**
- * @deprecated
- */
-ITunesMediator.prototype.findOrphanedTracksToDeleteFromITunes = function() {
-  if (this.deleteOrphanedFromITunes) {
-    var keys = this.tracksByLocation.keys();
-    logger.log("DEBUG", "size = "  + this.tracksByLocation.size());
-    for (var i = 0; i < this.tracksByLocation.size(); i++) {
-      //logger.log("DEBUG", "b = "  + keys[i]);
-      var location = keys[i];
-      if (location == "" || !file.FileExists(location)) {
-        logger.log("DEBUG", "File with location = `" + location
-            + "` is not found on disk. Will be deleting it.");
-      }
-    }
-  }
-};
-
-ITunesMediator.prototype.findOrphanedTracksToDeleteFromIPod = function() {
-  if (this.deleteOrphanedFromIPod) {
-    var keys = this.iPodTracksById.keys();
-    var count = 0;
-    for (var i = 0; i < this.iPodTracksById.size(); i++) {
-      if (!this.iTunesTracksById.containsKey(keys[i])) {
-        var trackToDelete = this.iPodTracksById.get(keys[i]);
-        logger.log("DEBUG", "Track titled `"
-            + trackToDelete.Name
-            + "` by `" + trackToDelete.Artist
-            + "` from album `" + trackToDelete.Album
-            + "` is on iPod but missing in iTunes and will be removed from iPod");
-        trackToDelete.Delete();
-        count++;
-      }
-    }
-    if (count > 0) {
-      this.iTunesApp.UpdateIPod();
-      logger.log("INFO", count + " files were removed from iPod");
-    }
   }
 };
 
@@ -175,13 +94,10 @@ ITunesMediator.prototype.addFreshFilesToITunes = function (folder) {
       var location = allTracksInDir[i - 1];
       fooTunesDb.locationsById.put(id, location);
       fooTunesDb.idsByLocation.put(location, id);
-//      logger.log("INFO", "track " + i + " - " + this.iPodLibrary.Tracks.Count
-//          + " - " + id
-//          + " - " + addedTracks.Item(i).TrackNumber + " " +  addedTracks.Item(i).Name
-//      );
       var error = true;
       while (error) {
         try {
+          // if iTunes is busy we'll wait for 1 sec
           track.Rating = 20 * foobar2000.tracksByLocation.get(location).Rating;
           track.PlayedCount = foobar2000.tracksByLocation.get(location).PlayedCount;
           track.PlayedDate =  Date.format(
@@ -217,29 +133,6 @@ ITunesMediator.prototype.removeTracksNotOnDisk = function () {
       fooTunesDb.locationsById.remove(key);
       fooTunesDb.idsByLocation.remove(location);
     }
-  }
-};
-
-ITunesMediator.prototype.getAllTrackLocations = function() {
-  return this.tracksByLocation.keys().slice(0);
-};
-
-ITunesMediator.prototype.pushNewTracksToIPodAndSync = function () {
-  logger.log("DEBUG", "new tracks count = " + this.newTracks.length);
-  if (this.iPodLibrary != null) {
-    logger.log("DEBUG", "there were " + this.iPodLibrary.Tracks.Count
-        + " track on " + this.iPod.Name + " before update");
-    logger.log("INFO", "adding " + this.newTracks.length + " to iPod");
-    for (var i = 0; i < this.newTracks.length; i++) {
-      // TODO: check whether the same file exists; something like trackID may be
-      this.iPodLibrary.AddTrack(this.newTracks[i]);
-    }
-    if (this.newTracks.length > 0) {
-      logger.log("INFO", "starting iPod update");
-      this.iTunesApp.UpdateIPod();
-    }
-    logger.log("DEBUG", "there are " + this.iPodLibrary.Tracks.Count
-        + " track on " + this.iPod.Name + " after update");
   }
 };
 

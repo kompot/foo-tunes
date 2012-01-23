@@ -1,10 +1,12 @@
 h1. foo-tunes
 
-Project is aimed to help foobar2000 users update their iPods with minimum usage of iTunes. Key features are:
+Project is aimed to help foobar2000 users update their iPods with minimum usage of iTunes. Features are:
 
-* One-click synchronization
 * Bidirectional playback statistics update between iPod/iTunes and foobar2000
-* iTunes media library is used only as a mediator between foobar2000 and iPod
+* Tag mappings support (meaningful album sort by year, iTunes compilation tag based on album artist value are included)
+* Album art attach on-the-fly
+* Separate folder for iPod music (you should put files to be sent to iPod there)
+* Uses iTunes COM interface to interact with iPod, so further updates to iTunes should not break `foo-tunes`
 
 h2. Motivation
 
@@ -27,27 +29,24 @@ h2. Prerequisites
 {"Location": "%path%", "Rating": "%rating%", "PlayedCount": "%play_count%", "PlayedDate": "%last_played%", "DateAdded": "%added%"},
 </pre>
 
-h2. Internals and TODOs
+h2. Internals
 
-Main script is `foo-tunes.js` (modify variables in the first lines - at least `pathToMusic` and `foobar2000`). Run it with `sync.bat`. The following actions are performed:
+Main script is `foo-tunes.js` (modify variables in the first lines - at least `musicTrackedPath`, `musicNotTrackedPath` and `foobar2000`). Run it with `sync.cmd`.
 
-* // TODO: move all files from folder `pathToMusic`-not-tracked to `pathToMusic` and wait for foobar2000 to get in touch with them
-* iPod is synced to iTunes
-* `pathToMusic` folder is scanned for new files
-* album art is attached on the fly (iTunes is used)
-* // TODO check whether foobar2000 is used otherwise just sync with files
-* tags (see `tagMappings` variable in `foo-tunes.js`) are modified (foobar2000 masstagger is used)
-* // TODO dead tracks, not found on disk, should be removed; option to remove those from iPod
-* those not in iTunes library are added to it
-* // TODO sync foobar2000 and iTunes statistics
-* new files are sent to iPod
-* iTunes stats is synced to iPod
-* // TODO: move all files from `pathToMusic` to `pathToMusic`-not-tracked
+You can pretty easily find what's going on under the covers by examining `foo-tunes.js` - there's only very high level logic (for deep internals see files located in `inc` and `lib` folders).
 
-h2. Recommended workflow 
+Feel free to modify sources and see what happens. I use oleview:http://www.microsoft.com/download/en/details.aspx?displaylang=en&id=7007 tool to explore iTunes COM interfaces. I'll be pleased to know if you can find a better/cleaner/faster way to do things this script performs.
 
-Set up foobar2000 converter component to convert music to `pathToMusic` folder (or file operations component if you do not want to convert - but I recommend using Nero AAC Encoder as aac provides better quality at a lower bitrate than mp3). Do not forget to copy *.jpg along with music files.
+h2. Recommended workflow
 
-Actually you may not use a separate folder and set your main library as iTunes file source but in this case your tags will get modifed by script (album art added if none and tags mapped if set). Also I would not expect iTunes not to mess up with your library. So keeping a separate folder is the preferred way.
+Set up foobar2000 converter component to convert music to `musicNotTrackedPath` folder (or file operations component if you do not want to convert - but I recommend using Nero AAC Encoder as aac provides better quality at a lower bitrate than mp3). Do not forget to copy *.jpg along with music files (there is such option in converter).
 
-Add `pathToMusic` as foobar2000 media library folder. This is required if you wish to sync playback statistics with iPod. Stats is synced based on full filename. Of course you do not want to see duplicates in your foobar2000 library. There are several ways to solve that. I use excellent `foo_facets` component to filter out tracks based on path, so I don't see those iPod-only tracks in the library at all. Another way is to attach `pathToMusic` as media library before every sync.
+Actually you may not use a separate folder and set your main library as iTunes file source but in this case your tags will get modifed by `foo-tunes` (album art added if none, tags mapped if set and playback statistics is first synced to file tags and then imported). Also I would not expect iTunes not to mess up with your library. So keeping a separate folder is a way to go.
+
+Add `musicTrackedPath` as foobar2000 media library folder. This is required if you wish to sync playback statistics with iPod. Stats is synced based on full filename and internal iTunes track id (see `foo-tunes-db.txt`).
+
+Before syncing all files are moved from `musicNotTrackedPath` to `musicTrackedPath` and when sync is over back to `musicNotTrackedPath` so you won't see duplicated in your foobar2000 library.
+
+h2. Changelog
+
+* 0.0.1 First public version. Lots of bugs are to be found and fixed. Use with caution.
