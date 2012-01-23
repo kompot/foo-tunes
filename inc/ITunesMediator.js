@@ -68,7 +68,7 @@ ITunesMediator.prototype.addFreshFilesToITunes = function (folder) {
 
     if (allowedMusicTypes.containsKey(extension)
         && !fooTunesDb.idsByLocation.containsKey(name)) {
-      logger.log("DEBUG", "adding track to library " + name);
+      logger.log("INFO", "adding track to library " + name);
       allTracksInDir.push(name);
     }
   }

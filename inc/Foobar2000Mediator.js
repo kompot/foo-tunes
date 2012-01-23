@@ -93,7 +93,7 @@ Foobar2000Mediator.prototype.preProcessTags = function (tracks, tagMappings,
 Foobar2000Mediator.prototype.loadPlaybackStats = function () {
   var command = this.path + ' /runcmd-files=\"' + this.copyCommandName + '\" '
       + ' ' + this.musicTrackedPath;
-  logger.log("INFO", command);
+  logger.log("DEBUG", command);
   clipboard.SetClipboardText("error");
   runCommand(command, 0);
   // Maybe should check real data - do eval and check that
@@ -137,6 +137,7 @@ Foobar2000Mediator.prototype.loadPlaybackStats = function () {
 
 Foobar2000Mediator.prototype.syncPlaybackStats = function () {
   var keys = iTunes.iPodTracksById.keys();
+  logger.log("INFO", "Starting to sync playback statistics");
   for (var i = 0; i < iTunes.iPodTracksById.size(); i++) {
     var trackIPod = iTunes.iPodTracksById.get(keys[i]);
     var location = fooTunesDb.locationsById.get(keys[i]);
@@ -187,6 +188,10 @@ Foobar2000Mediator.prototype.syncPlaybackStats = function () {
       // in this case we should probably use higher rating
     }
   }
+  logger.log("INFO", "Finished syncing playback statistics");
+  // this should be need for the last track only
+  logger.log("DEBUG", "Waiting 5 sec to let foobar2000 sync stats");
+  WScript.Sleep(5000);
 };
 
 Foobar2000Mediator.prototype.updateFoobarTrackStats = function(location, rating,
