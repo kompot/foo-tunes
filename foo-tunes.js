@@ -20,6 +20,9 @@ tagMappings = ""
  * @deprecated
  */
 deleteTracksFromITunesNotFoundOnDisk = true;
+/**                                                                   v
+ * @deprecated
+ */
 deleteTracksFromIPodNotFoundInITunes = true;
 
 // -----------------------------------------------------------------------------
@@ -28,6 +31,7 @@ deleteTracksFromIPodNotFoundInITunes = true;
 //
 // -----------------------------------------------------------------------------
 
+var defaultDate = new Date(1961, 3, 12);
 var date = new Date();
 logger = new Logger(logLevel, "logs", date);
 fooTunesDb = new FooTunesDb("logs", date);
@@ -64,6 +68,9 @@ iTunes.removeTracksNotOnDisk();
 
 
 fooTunesDb.dump();
+
+// TODO: should run UpdateIpod method as stats is not updated within iTunes
+foobar2000.syncPlaybackStats();
 
 WScript.Quit(1);
 
