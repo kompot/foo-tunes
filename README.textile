@@ -35,7 +35,7 @@ Main script is `foo-tunes.js` (modify variables in the first lines - at least `m
 
 You can pretty easily find what's going on under the covers by examining `foo-tunes.js` - there's only very high level logic (for deep internals see files located in `inc` and `lib` folders).
 
-Feel free to modify sources and see what happens. I use oleview:http://www.microsoft.com/download/en/details.aspx?displaylang=en&id=7007 tool to explore iTunes COM interfaces. I'll be pleased to know if you can find a better/cleaner/faster way to do things this script performs.
+Feel free to modify sources and see what happens. I use "oleview":http://www.microsoft.com/download/en/details.aspx?displaylang=en&id=7007 tool to explore iTunes COM interfaces. I'll be pleased to know if you can find a better/cleaner/faster way to do things this script performs.
 
 h2. Recommended workflow
 
