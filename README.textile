@@ -31,7 +31,7 @@ h2. Prerequisites
 
 h2. Internals
 
-Main script is `foo-tunes.js` (modify variables in the first lines - at least `musicTrackedPath`, `musicNotTrackedPath` and `foobar2000`). Run it with `sync.cmd`.
+Main script is `foo-tunes.js` (modify variables in the first lines - at least `musicTrackedPath`, `musicNotTrackedPath` and `foobar2000Path`). Run it with `sync.cmd`.
 
 You can pretty easily find what's going on under the covers by examining `foo-tunes.js` - there's only very high level logic (for deep internals see files located in `inc` and `lib` folders).
 
@@ -49,4 +49,5 @@ Before syncing all files are moved from `musicNotTrackedPath` to `musicTrackedPa
 
 h2. Changelog
 
+* "0.0.2":https://github.com/kompot/foo-tunes/issues?milestone=1&state=closed Fixed file system compatibility bugs and made database preserving more robust.
 * 0.0.1 First public version. Lots of bugs are to be found and fixed. Use with caution.
