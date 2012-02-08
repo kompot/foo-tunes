@@ -1,11 +1,15 @@
 function Foobar2000Mediator() {
-  this.path = foobar2000Path;
+  this.path = "\"" + this.fixPath(foobar2000Path) + "\"";
   this.copyCommandName = copyCommandName;
-  this.musicTrackedPath = musicTrackedPath;
-  this.musicNotTrackedPath = musicNotTrackedPath;
+  this.musicTrackedPath = this.fixPath(musicTrackedPath);
+  this.musicNotTrackedPath = this.fixPath(musicNotTrackedPath);
   this.tagMappings = tagMappings;
   this.tracksByLocation = new Hashtable();
 }
+
+Foobar2000Mediator.prototype.fixPath = function(path) {
+  return path.replace(/ /g, "\ ");
+};
 
 Foobar2000Mediator.prototype.moveMusicToTrackedLocation = function() {
   if (file.GetFolder(this.musicNotTrackedPath).SubFolders.Count > 0) {
@@ -141,6 +145,11 @@ Foobar2000Mediator.prototype.syncPlaybackStats = function () {
   for (var i = 0; i < iTunes.iPodTracksById.size(); i++) {
     var trackIPod = iTunes.iPodTracksById.get(keys[i]);
     var location = fooTunesDb.locationsById.get(keys[i]);
+    if (location == null) {
+      // TODO: seems like track was added manually, probably later there
+      // should be an option to delete such tracks
+      continue;
+    }
     var trackFoobar = this.tracksByLocation.get(location);
 
     if (trackFoobar == null) {

@@ -68,7 +68,7 @@ ITunesMediator.prototype.addFreshFilesToITunes = function (folder) {
 
     if (allowedMusicTypes.containsKey(extension)
         && !fooTunesDb.idsByLocation.containsKey(name)) {
-      logger.log("INFO", "adding track to library " + name);
+      logger.log("INFO", "adding " + name);
       allTracksInDir.push(name);
     }
   }
@@ -126,6 +126,11 @@ ITunesMediator.prototype.removeTracksNotOnDisk = function () {
   for (var i = 0; i < keys.length; i++) {
     var key = keys[i];
     var location = fooTunesDb.locationsById.get(key);
+    if (location == null) {
+      // TODO: seems like track was added manually, probably later there
+      // should be an option to delete such tracks
+      continue;
+    }
     if (!file.FileExists(location)) {
       logger.log("DEBUG", "Track at location " + location + " is no longer " +
           "on disk. Removing it from iPod and from DB.");
