@@ -3,7 +3,7 @@ function Logger(logLevel, logsRootDir, date) {
     file.CreateFolder(logsRootDir);
   }
   var logDir = logsRootDir + "\\"
-      + Date.format("%Y-%m-%d %H:%M:%S", date, "0");
+      + Date.format("%Y-%m-%d_%H-%M-%S", date, "0");
   if (!file.FolderExists(logDir)) {
     file.CreateFolder(logDir);
   }
@@ -21,7 +21,7 @@ Logger.prototype.log = function(level, message) {
 };
 
 Logger.prototype.getLogItemInfo = function (level) {
-  return level.padRight(6, " ")+ Date.format(
+  return level.padRight(6, " ") + Date.format(
       "%Y-%m-%d %H:%M:%S", new Date(), "0")
       .toString().padRight(24, " ");
 };
