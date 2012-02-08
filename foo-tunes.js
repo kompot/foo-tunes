@@ -11,7 +11,7 @@ allowedMusicTypes.put("mp3", "");
 allowedMusicTypes.put("m4a", "");
 tagMappings = ""
   // to be correctly sorted within artist view and within album view
-  + '"FORMAT:ALBUMSORTORDER:%album artist% %date%";'
+  + '"FORMAT:ALBUMSORTORDER:%album artist% %date% %album%";'
   // for compilations to appear in `compilations` section
   + '"FORMAT:ITUNESCOMPILATION:$if($stricmp($meta(album artist),various artists),1,)";'
 ;
@@ -42,19 +42,23 @@ foobar2000.moveMusicToTrackedLocation();
 foobar2000.rescanLibrary();
 
 iTunes = new ITunesMediator();
-iTunes.initIpod();
-// this will sync ratings/play counts from iPod to iTunes
-iTunes.iTunesApp.UpdateIPod();
-iTunes.cacheTracks();
-// TODO should we delete files from disk here? probably yes - if they were in DB
-fooTunesDb.removeTracksNotOnIPod();
-foobar2000.loadPlaybackStats();
-iTunes.addFreshFilesToITunes();
-iTunes.removeTracksNotOnDisk();
+try {
+  iTunes.initIpod();
+  // this will sync ratings/play counts from iPod to iTunes
+  iTunes.iTunesApp.UpdateIPod();
+  iTunes.cacheTracks();
+  // TODO should we delete files from disk here? probably yes - if they were in DB
+  fooTunesDb.removeTracksNotOnIPod();
+  foobar2000.loadPlaybackStats();
+  iTunes.addFreshFilesToITunes();
+  iTunes.removeTracksNotOnDisk();
+  foobar2000.syncPlaybackStats();
+  // TODO: option to eject iPod?
+} catch (e) {
+  logger.log("ERROR", "Error occured. Exiting. " + e.message);
+}
 fooTunesDb.dump();
-foobar2000.syncPlaybackStats();
 foobar2000.moveMusicToNotTrackedLocation();
-// TODO: option to eject iPod?
 
 /**
  * Runs a shell command
