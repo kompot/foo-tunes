@@ -4,7 +4,7 @@ function FooTunesDb(logsRootDir, date) {
     file.CreateFolder(logsRootDir);
   }
   var logDir = logsRootDir + "\\"
-      + Date.format("%Y-%m-%d %H:%M:%S", date, "0");
+      + Date.format("%Y-%m-%d_%H-%M-%S", date, "0");
   if (!file.FolderExists(logDir)) {
     file.CreateFolder(logDir);
   }
